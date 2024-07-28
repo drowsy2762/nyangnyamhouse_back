@@ -29,6 +29,7 @@ dependencies {
 
 	//mongodb
 	implementation 'org.springframework.ai:spring-ai-mongodb-atlas-store-spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
