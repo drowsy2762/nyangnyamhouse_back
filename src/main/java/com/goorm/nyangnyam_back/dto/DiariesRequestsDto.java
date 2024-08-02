@@ -1,6 +1,9 @@
 package com.goorm.nyangnyam_back.dto;
 
-public class DiariesDTO {
+import lombok.Getter;
+
+@Getter
+public class DiariesRequestsDto {
     private String images;
     private String comments;
     private String publicRange;

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor
-public class DiariesBoard {
+public class DiariesEntity extends Timestamped{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -19,7 +19,7 @@ public class DiariesBoard {
     private String images;
 
     @Column(nullable = false)
-    private String publicrage;
+    private String publicRange;
 
     @Column(nullable = false)
     private String category;
