@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface DiariesRepository extends JpaRepository<DiariesEntity, Long> {
-    List<DiariesResponseDto> findAllByOrderByModifiedAtDesc();
+    List<DiariesEntity> findAllByOrderByModifiedAtDesc();
 }

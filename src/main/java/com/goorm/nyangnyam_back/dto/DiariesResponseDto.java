@@ -25,7 +25,7 @@ public class DiariesResponseDto {
         this.grade = entity.getGrade();
         this.recommend = entity.getRecommend();
         this.category = entity.getCategory();
-        this.createAt =entity.getCreatedAt();
-        this.userId = getUserId();
+        this.createAt = entity.getCreatedAt();
+        this.userId = entity.getUserId();
     }
 }

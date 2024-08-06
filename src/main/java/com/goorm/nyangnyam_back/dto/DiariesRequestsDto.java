@@ -10,4 +10,5 @@ public class DiariesRequestsDto {
     private String category;
     private Integer grade;
     private Boolean recommend;
+    private String userId;
 }
