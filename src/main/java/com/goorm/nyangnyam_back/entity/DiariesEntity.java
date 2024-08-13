@@ -2,36 +2,22 @@ package com.goorm.nyangnyam_back.entity;
 
 import com.goorm.nyangnyam_back.dto.DiariesRequestsDto;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Getter
-@Entity
-@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@Data
+@Document(collation = "diaries")
 public class DiariesEntity extends Timestamped {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    @Column(nullable = false)
     private String comment;
-
-    @Column(nullable = false)
     private String images;
-
-    @Column(nullable = false)
     private String publicRange;
-
-    @Column(nullable = false)
     private String category;
-
-    @Column(nullable = false)
     private Integer grade;
-
-    @Column(nullable = false)
     private Boolean recommend;
-
-    @Column(nullable = false)
     private String userId;
 
     public DiariesEntity(DiariesRequestsDto requestsDto) {
