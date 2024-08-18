@@ -34,23 +34,38 @@ import java.util.*;
  *      -LoginFilter는 사용자가 소셜 로그인 요청 시, 회원가입 및 로그인(사용자 인증)을 처리하는 커스텀 필터, UsernamePasswordAuthenticationFilter를 상속받음.
  *      -attemptAuthentication() 메서드에서 사용자의 정보를 추출하여 소셜 서비스에 맞게 토큰으로 만든 후, 스프링 시큐리티의 AuthenticationManager를 통해 인증을 시도.
  *      -AuthenticationManager는 CustomAuthenticationProvider를 통해 인증을 수행
+ *      -로그인 성공(인증 성공)시 2개의 JWT(access, refresh 토큰) 발급, 로그인 실패 시 에러 코드 반환.
  *
  * 코드 주요 기능:
  *      -attemptAuthentication(): 사용자가 소셜 로그인 시 호출되며, 회원가입 및 로그인을 처리함. AuthenticationManager를 통해 사용자 인증을 시도.
+ *      -successfulAuthentication(): 로그인 성공 시 2개의 JWT를 생성하여 응답 헤더에 추가.
+ *      -unsuccessfulAuthentication(): 로그인 실패 시 401 응답 코드를 반환.
  *
-
+ *
+ * 토큰의 종류
+ *  1) Access Token:
+ *      -짧은 유효기간(10분), 주로 인증에 사용 (헤더에 발급 후 프론트에서 로컬 스토리지 저장)
+ *      -사용자가 특정 리소스나 API에 접근할 수 있도록 권한을 부여하는 단기 유효 토큰
+ *
+ *  2) Refresh Token:
+ *      -긴 유효기간(24시간), Access Token 갱신에 사용 (헤더에 발급)
+ *      -Access 토큰이 만료되었을 때, 새로운 Access 토큰을 발급받기 위해 사용되는 장기 유효 토큰
+ *
+ *
  * 코드 작성일:
- *      -2024.08.18 ~ 2024.08.18
+ *      -2024.08.18 ~ 2024.08.19
  */
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
+    private final JWTUtil jwtUtil;
 
-    public LoginFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
+    public LoginFilter(AuthenticationManager authenticationManager, UserRepository userRepository, JWTUtil jwtUtil) {
         this.setFilterProcessesUrl("/auth/login");  // 공통 로그인 엔드포인트 설정
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
     }
 
 
@@ -135,11 +150,30 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
 
     /**
-     * 로그인 성공 시 실행하는 메소드
+     * 로그인 성공 시 실행하는 메소드(여기서 2개의 JWT 발급)
      */
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
-        System.out.println("로그인 성공");
+
+        // 사용자 정보 가져오기
+        String username = authentication.getName();
+
+
+        // 사용자의 권한 정보를 가져옴
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities(); //사용자의 권한 정보를 Collection 형태로 가져옴
+        Iterator<? extends GrantedAuthority> iterator = authorities.iterator(); //권한 정보를 순회하기 위한 Iterator 생성
+        GrantedAuthority auth = iterator.next();  //Iterator에서 첫 번째 권한 객체를 가져옴
+        String role = auth.getAuthority();
+
+
+        //2개의 JWT(access, refresh) 토큰 생성
+        String access = jwtUtil.createJwt("access", username, role, 10*60*1000L);      //유효 시간: 10분(10 * 60 * 1초)
+        String refresh = jwtUtil.createJwt("refresh", username, role, 24*60*60*1000L); //유효 시간: 24시간(24 * 60 * 60 * 1초)
+
+
+        //응답 헤더에 2개의 JWT 발급
+        response.setHeader("access", access);
+        response.setHeader("refresh", refresh);
         response.setStatus(HttpStatus.OK.value());
     }
 
