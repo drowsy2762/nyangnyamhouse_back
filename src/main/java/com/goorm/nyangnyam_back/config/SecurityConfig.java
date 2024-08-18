@@ -1,6 +1,7 @@
 package com.goorm.nyangnyam_back.config;
 
 import com.goorm.nyangnyam_back.jwt.CustomAuthenticationProvider;
+import com.goorm.nyangnyam_back.jwt.JWTUtil;
 import com.goorm.nyangnyam_back.jwt.LoginFilter;
 import com.goorm.nyangnyam_back.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +22,14 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final UserRepository userRepository;
     private final CustomAuthenticationProvider customAuthenticationProvider;
+    private final JWTUtil jwtUtil;
 
     @Autowired
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, UserRepository userRepository, CustomAuthenticationProvider customAuthenticationProvide) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, UserRepository userRepository, CustomAuthenticationProvider customAuthenticationProvide, JWTUtil jwtUtil) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.userRepository = userRepository;
         this.customAuthenticationProvider = customAuthenticationProvide;
+        this.jwtUtil = jwtUtil;
     }
 
 
@@ -73,7 +76,7 @@ public class SecurityConfig {
 
         //LoginFilter 등록
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), userRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), userRepository, jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
 
         return http.build();
