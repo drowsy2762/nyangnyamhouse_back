@@ -1,9 +1,6 @@
 package com.goorm.nyangnyam_back.config;
 
-import com.goorm.nyangnyam_back.jwt.CustomAuthenticationProvider;
-import com.goorm.nyangnyam_back.jwt.JWTFilter;
-import com.goorm.nyangnyam_back.jwt.JWTUtil;
-import com.goorm.nyangnyam_back.jwt.LoginFilter;
+import com.goorm.nyangnyam_back.jwt.*;
 import com.goorm.nyangnyam_back.repository.RefreshRepository;
 import com.goorm.nyangnyam_back.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -86,6 +84,11 @@ public class SecurityConfig {
         //JWTFilter 등록
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+
+
+        //CustomLogoutFilter 등록
+        http
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
 
 
         return http.build();
