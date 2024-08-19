@@ -18,7 +18,7 @@ public class ReissueService {
 
 
     /**
-     * refresh 토큰을 검증하고, 새로운 access 토큰을 반환하는 메서드
+     * refresh 토큰을 검증하고, 새로운 access 및 refresh 토큰을 반환하는 메서드
      */
     public String[] reissueTokens(String refresh) {
         // refresh 토큰 유효성 검사
@@ -28,10 +28,11 @@ public class ReissueService {
         String username = jwtUtil.getUsername(refresh);
         String role = jwtUtil.getRole(refresh);
 
-        // 새로운 access 토큰 생성
+        // 새로운 access 토큰 및 refresh 토큰 생성
         String newAccess = jwtUtil.createJwt("access", username, role, 10*60*1000L);
+        String newRefresh = jwtUtil.createJwt("refresh", username, role, 24*60*60*1000L);
 
-        // 새로운 access 토큰 반환
-        return new String[]{newAccess};
+        // 새로운 access 토큰 및 refresh 토큰 반환
+        return new String[]{newAccess, newRefresh};
     }
 }
