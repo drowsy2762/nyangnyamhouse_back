@@ -128,7 +128,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 user.setProviderId(providerId);
                 user.setEmail(email);
                 user.setName(name);
-                user.setRole("ROLE_USER");
+                user.setRole("ROLE_ADMIN");
                 userRepository.save(user);
             }
             
