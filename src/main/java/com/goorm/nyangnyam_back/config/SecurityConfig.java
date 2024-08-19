@@ -4,6 +4,7 @@ import com.goorm.nyangnyam_back.jwt.CustomAuthenticationProvider;
 import com.goorm.nyangnyam_back.jwt.JWTFilter;
 import com.goorm.nyangnyam_back.jwt.JWTUtil;
 import com.goorm.nyangnyam_back.jwt.LoginFilter;
+import com.goorm.nyangnyam_back.repository.RefreshRepository;
 import com.goorm.nyangnyam_back.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -24,13 +25,15 @@ public class SecurityConfig {
     private final UserRepository userRepository;
     private final CustomAuthenticationProvider customAuthenticationProvider;
     private final JWTUtil jwtUtil;
+    private final RefreshRepository refreshRepository;
 
     @Autowired
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, UserRepository userRepository, CustomAuthenticationProvider customAuthenticationProvide, JWTUtil jwtUtil) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, UserRepository userRepository, CustomAuthenticationProvider customAuthenticationProvide, JWTUtil jwtUtil, RefreshRepository refreshRepository) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.userRepository = userRepository;
         this.customAuthenticationProvider = customAuthenticationProvide;
         this.jwtUtil = jwtUtil;
+        this.refreshRepository = refreshRepository;
     }
 
 
@@ -77,7 +80,7 @@ public class SecurityConfig {
 
         //LoginFilter 등록
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), userRepository, jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), userRepository, jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);
 
 
         //JWTFilter 등록

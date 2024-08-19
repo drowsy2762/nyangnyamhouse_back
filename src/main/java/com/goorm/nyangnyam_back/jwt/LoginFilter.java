@@ -2,9 +2,11 @@ package com.goorm.nyangnyam_back.jwt;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.goorm.nyangnyam_back.document.Refresh;
 import com.goorm.nyangnyam_back.document.User;
 import com.goorm.nyangnyam_back.dto.Response.KakaoResponse;
 import com.goorm.nyangnyam_back.dto.Response.LoginResponse;
+import com.goorm.nyangnyam_back.repository.RefreshRepository;
 import com.goorm.nyangnyam_back.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
@@ -60,12 +62,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final JWTUtil jwtUtil;
+    private final RefreshRepository refreshRepository;
 
-    public LoginFilter(AuthenticationManager authenticationManager, UserRepository userRepository, JWTUtil jwtUtil) {
+    public LoginFilter(AuthenticationManager authenticationManager, UserRepository userRepository, JWTUtil jwtUtil, RefreshRepository refreshRepository) {
         this.setFilterProcessesUrl("/auth/login");  // 공통 로그인 엔드포인트 설정
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
+        this.refreshRepository = refreshRepository;
     }
 
 
@@ -171,6 +175,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String refresh = jwtUtil.createJwt("refresh", username, role, 24*60*60*1000L); //유효 시간: 24시간(24 * 60 * 60 * 1초)
 
 
+        //Refresh 토큰 저장
+        saveRefreshDocument(username, refresh, 86400000L);
+
         //응답 헤더에 2개의 JWT 발급
         response.setHeader("access", access);
         response.setHeader("refresh", refresh);
@@ -186,5 +193,20 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         System.out.println("로그인 실패: " + failed.getMessage());
         response.getWriter().write("Authentication failed: " + failed.getMessage());
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    }
+
+
+    /**
+     *  DB에 refresh 토큰 저장 메서드
+     */
+    private void saveRefreshDocument(String username, String refresh, Long expiredMs) {
+
+        Date date = new Date(System.currentTimeMillis() + expiredMs);
+        Refresh refreshDocument = new Refresh();
+        refreshDocument.setUsername(username);
+        refreshDocument.setRefresh(refresh);
+        refreshDocument.setExpiration(date.toString());
+
+        refreshRepository.save(refreshDocument);
     }
 }
