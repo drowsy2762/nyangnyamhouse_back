@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
 public class DiariesService {
     private final DiariesRepository diariesRepository;
 
-
-
     @Transactional(readOnly = true)
     public List<DiariesResponseDto> getPosts() {
         return diariesRepository.findAllByOrderByModifiedAtDesc().stream()
