@@ -1,6 +1,7 @@
 package com.goorm.nyangnyam_back.config;
 
 import com.goorm.nyangnyam_back.jwt.CustomAuthenticationProvider;
+import com.goorm.nyangnyam_back.jwt.JWTFilter;
 import com.goorm.nyangnyam_back.jwt.JWTUtil;
 import com.goorm.nyangnyam_back.jwt.LoginFilter;
 import com.goorm.nyangnyam_back.repository.UserRepository;
@@ -77,6 +78,11 @@ public class SecurityConfig {
         //LoginFilter 등록
         http
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), userRepository, jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
+
+        //JWTFilter 등록
+        http
+                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 
 
         return http.build();
