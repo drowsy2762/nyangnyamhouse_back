@@ -6,6 +6,7 @@ import com.goorm.nyangnyam_back.dto.DiariesSuccessResponseDto;
 import com.goorm.nyangnyam_back.entity.DiariesEntity;
 import com.goorm.nyangnyam_back.repository.DiariesRepository;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,25 +33,25 @@ public class DiariesService {
     }
 
     @Transactional
-    public DiariesResponseDto getPost(Long id) {
+    public DiariesResponseDto getPost(ObjectId id) {
         return diariesRepository.findById(id).map(DiariesResponseDto::new).orElseThrow(
                 () -> new IllegalArgumentException("아이디가 존재하지 않습니다")
         );
     }
 
     @Transactional
-    public DiariesResponseDto updatePost(Long id, DiariesRequestsDto requestsDto) throws Exception {
+    public DiariesResponseDto updatePost(ObjectId id, DiariesRequestsDto requestsDto) throws Exception {
         DiariesEntity diaries = diariesRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("아이디가 존재하지 않습니다")
         );
-        // 토큰으로 처리할 에정
+        // 토큰으로 처리할 예정
 
         diaries.update(requestsDto);
         return new DiariesResponseDto(diaries);
     }
 
     @Transactional
-    public DiariesSuccessResponseDto deletePost(Long id, DiariesRequestsDto requestsDto) throws  Exception {
+    public DiariesSuccessResponseDto deletePost(ObjectId id, DiariesRequestsDto requestsDto) throws Exception {
         DiariesEntity diaries = diariesRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("아이디가 존재하지 않습니다")
         );

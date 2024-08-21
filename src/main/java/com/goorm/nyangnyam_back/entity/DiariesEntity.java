@@ -1,17 +1,18 @@
 package com.goorm.nyangnyam_back.entity;
 
 import com.goorm.nyangnyam_back.dto.DiariesRequestsDto;
-import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Document(collation = "diaries")
+@Document(collection = "diaries")
 public class DiariesEntity extends Timestamped {
     @Id
-    private Long id;
+    private ObjectId id;
     private String comment;
     private String images;
     private String publicRange;

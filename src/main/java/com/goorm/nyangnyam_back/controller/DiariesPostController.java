@@ -3,8 +3,8 @@ package com.goorm.nyangnyam_back.controller;
 import com.goorm.nyangnyam_back.dto.DiariesRequestsDto;
 import com.goorm.nyangnyam_back.dto.DiariesResponseDto;
 import com.goorm.nyangnyam_back.dto.DiariesSuccessResponseDto;
-import com.goorm.nyangnyam_back.repository.DiariesRepository;
 import com.goorm.nyangnyam_back.service.DiariesService;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -23,27 +23,27 @@ public class DiariesPostController {
 
     @GetMapping("/")
     public List<DiariesResponseDto> getPosts() {
-        return this.getPosts();
+        return diariesService.getPosts();
     }
 
     @PostMapping("/")
     public DiariesResponseDto createPost(@RequestBody DiariesRequestsDto requestsDto) {
-        return  diariesService.createPost(requestsDto);
+        return diariesService.createPost(requestsDto);
     }
 
     @Transactional
-    public DiariesResponseDto getPost(@PathVariable Long id){
+    @GetMapping("/{id}")
+    public DiariesResponseDto getPost(@PathVariable ObjectId id) {
         return diariesService.getPost(id);
     }
 
-    @PutMapping("/")
-    public DiariesResponseDto updatePost(@PathVariable Long id, @RequestBody DiariesRequestsDto requestsDto) throws Exception {
+    @PutMapping("/{id}")
+    public DiariesResponseDto updatePost(@PathVariable ObjectId id, @RequestBody DiariesRequestsDto requestsDto) throws Exception {
         return diariesService.updatePost(id, requestsDto);
     }
 
-    @DeleteMapping("/")
-    public DiariesSuccessResponseDto deletePost(@PathVariable Long id, @RequestBody DiariesRequestsDto requestsDto) throws  Exception{
+    @DeleteMapping("/{id}")
+    public DiariesSuccessResponseDto deletePost(@PathVariable ObjectId id, @RequestBody DiariesRequestsDto requestsDto) throws Exception {
         return diariesService.deletePost(id, requestsDto);
     }
-    
 }
