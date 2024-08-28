@@ -1,62 +1,85 @@
 package com.goorm.nyangnyam_back.service;
 
-import com.goorm.nyangnyam_back.dto.DiariesRequestsDto;
-import com.goorm.nyangnyam_back.dto.DiariesResponseDto;
-import com.goorm.nyangnyam_back.dto.DiariesSuccessResponseDto;
-import com.goorm.nyangnyam_back.entity.DiariesEntity;
+import com.goorm.nyangnyam_back.model.DiariesModel;
 import com.goorm.nyangnyam_back.repository.DiariesRepository;
-import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.stream.events.Comment;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class DiariesService {
-    private final DiariesRepository diariesRepository;
+    @Autowired
+    private DiariesRepository diariesRepository;
 
-    @Transactional(readOnly = true)
-    public List<DiariesResponseDto> getPosts() {
-        return diariesRepository.findAllByOrderByModifiedAtDesc().stream()
-                .map(DiariesResponseDto::new)
-                .collect(Collectors.toList());
+    public List<DiariesModel> getAllDiaries() {
+        return diariesRepository.findAll();
     }
 
-    @Transactional
-    public DiariesResponseDto createPost(DiariesRequestsDto requestsDto) {
-        DiariesEntity entity = new DiariesEntity(requestsDto);
-        diariesRepository.save(entity);
-        return new DiariesResponseDto(entity);
+    public DiariesModel getDiariesById(String id){
+        return diariesRepository.findById(id).orElse(null);
     }
 
-    @Transactional
-    public DiariesResponseDto getPost(ObjectId id) {
-        return diariesRepository.findById(id).map(DiariesResponseDto::new).orElseThrow(
-                () -> new IllegalArgumentException("아이디가 존재하지 않습니다")
-        );
+    public DiariesModel createDiaries(DiariesModel diariesModel){
+        return diariesRepository.save(diariesModel);
     }
 
-    @Transactional
-    public DiariesResponseDto updatePost(ObjectId id, DiariesRequestsDto requestsDto) throws Exception {
-        DiariesEntity diaries = diariesRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("아이디가 존재하지 않습니다")
-        );
-        // 토큰으로 처리할 예정
-
-        diaries.update(requestsDto);
-        return new DiariesResponseDto(diaries);
+    public DiariesModel updateDiaries(String id, DiariesModel diariesModel){
+        DiariesModel existingDiaries = diariesRepository.findById(id).orElse(null);
+        if(existingDiaries != null) {
+            existingDiaries.setImages(diariesModel.getImages());
+            existingDiaries.setComments(diariesModel.getComments());
+            existingDiaries.setPublicRange(diariesModel.getPublicRange());
+            existingDiaries.setCategory(diariesModel.getCategory());
+            existingDiaries.setGrade(diariesModel.getGrade());
+            existingDiaries.setRecommend(diariesModel.getRecommend());
+            existingDiaries.setUserId(diariesModel.getUserId());
+        }
+        return null;
     }
 
-    @Transactional
-    public DiariesSuccessResponseDto deletePost(ObjectId id, DiariesRequestsDto requestsDto) throws Exception {
-        DiariesEntity diaries = diariesRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("아이디가 존재하지 않습니다")
-        );
-
+    public void deleteDiaries(String id){
         diariesRepository.deleteById(id);
-        return new DiariesSuccessResponseDto(true);
+    }
+
+    public DiariesModel likeDiaries(String id){
+        DiariesModel diariesModel = diariesRepository.findById(id).orElse(null);
+        if(diariesModel != null) {
+            diariesModel.setLikes(diariesModel.getLikes() + 1);
+            return diariesRepository.save(diariesModel);
+        }
+        return null;
+    }
+
+    public DiariesModel scrapDiaries(String id){
+        DiariesModel diariesModel = diariesRepository.findById(id).orElse(null);
+        if(diariesModel != null) {
+            diariesModel.setScraps(diariesModel.getScraps() + 1);
+            return diariesRepository.save(diariesModel);
+        }
+        return null;
+    }
+
+    public List<DiariesModel> getDiariesSortedByLikes(){
+        return diariesRepository.findAll(Sort.by(Sort.Direction.DESC, "likes"));
+    }
+
+    public DiariesModel addComment (String id, Comment comment){
+        DiariesModel diariesModel = diariesRepository.findById(id).orElse(null);
+        if(diariesModel != null){
+            diariesModel.getCommentList().add(comment);
+            return diariesRepository.save(diariesModel);
+        }
+        return null;
+    }
+
+    public List<Comment> getComments(String id){
+        DiariesModel diariesModel = diariesRepository.findById(id).orElse(null);
+        if(diariesModel != null){
+            return diariesModel.getCommentList();
+        }
+        return null;
     }
 }
