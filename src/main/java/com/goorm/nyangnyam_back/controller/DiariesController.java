@@ -1,6 +1,6 @@
 package com.goorm.nyangnyam_back.controller;
 
-import com.goorm.nyangnyam_back.model.DiariesModel;
+import com.goorm.nyangnyam_back.model.Diaries;
 import com.goorm.nyangnyam_back.service.DiariesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,13 +18,13 @@ public class DiariesController {
     private DiariesService diariesService;
 
     @GetMapping
-    public List<DiariesModel> getAllDiaries(){
+    public List<Diaries> getAllDiaries(){
         return diariesService.getAllDiaries();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DiariesModel> getDiariesById(@PathVariable String id){
-        DiariesModel diariesModel = diariesService.getDiariesById(id);
+    public ResponseEntity<Diaries> getDiariesById(@PathVariable String id){
+        Diaries diariesModel = diariesService.getDiariesById(id);
         if(diariesModel != null){
             return ResponseEntity.ok(diariesModel);
         }
@@ -34,13 +34,13 @@ public class DiariesController {
     }
 
     @PostMapping
-    public DiariesModel createDiaries(@RequestBody DiariesModel diariesModel) {
-        return diariesService.createDiaries(diariesModel);
+    public Diaries createDiaries(@RequestBody Diaries diaries) {
+        return diariesService.createDiaries(diaries);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DiariesModel> updateDiaries(@PathVariable String id, @RequestBody DiariesModel diariesModel) {
-        DiariesModel updatedDiaries = diariesService.updateDiaries(id, diariesModel);
+    public ResponseEntity<Diaries> updateDiaries(@PathVariable String id, @RequestBody Diaries diaries) {
+        Diaries updatedDiaries = diariesService.updateDiaries(id, diaries);
         if (updatedDiaries != null) {
             return ResponseEntity.ok(updatedDiaries);
         } else {
@@ -55,8 +55,8 @@ public class DiariesController {
     }
 
     @PostMapping("/{id}/like")
-    public ResponseEntity<DiariesModel> likeDiaries(@PathVariable String id) {
-        DiariesModel likedDiaries = diariesService.likeDiaries(id);
+    public ResponseEntity<Diaries> likeDiaries(@PathVariable String id) {
+        Diaries likedDiaries = diariesService.likeDiaries(id);
         if (likedDiaries != null) {
             return ResponseEntity.ok(likedDiaries);
         } else {
@@ -65,8 +65,8 @@ public class DiariesController {
     }
 
     @PostMapping("/{id}/scrap")
-    public ResponseEntity<DiariesModel> scrapDiaries(@PathVariable String id) {
-        DiariesModel scrapedDiaries = diariesService.scrapDiaries(id);
+    public ResponseEntity<Diaries> scrapDiaries(@PathVariable String id) {
+        Diaries scrapedDiaries = diariesService.scrapDiaries(id);
         if (scrapedDiaries != null) {
             return ResponseEntity.ok(scrapedDiaries);
         } else {
@@ -75,14 +75,14 @@ public class DiariesController {
     }
 
     @GetMapping("/sorted/likes")
-    public ResponseEntity<List<DiariesModel>> getDiariesSortedByLikes() {
-        List<DiariesModel> sortedDiaries = diariesService.getDiariesSortedByLikes();
+    public ResponseEntity<List<Diaries>> getDiariesSortedByLikes() {
+        List<Diaries> sortedDiaries = diariesService.getDiariesSortedByLikes();
         return ResponseEntity.ok(sortedDiaries);
     }
 
     @PostMapping("/{id}/comments")
-    public ResponseEntity<DiariesModel> addComment(@PathVariable String id, @RequestBody Comment comment) {
-        DiariesModel diaries = diariesService.addComment(id, comment);
+    public ResponseEntity<Diaries> addComment(@PathVariable String id, @RequestBody Comment comment) {
+        Diaries diaries = diariesService.addComment(id, comment);
         if (diaries != null) {
             return ResponseEntity.ok(diaries);
         } else {

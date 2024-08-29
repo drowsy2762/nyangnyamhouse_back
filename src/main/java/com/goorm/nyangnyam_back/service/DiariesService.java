@@ -1,6 +1,6 @@
 package com.goorm.nyangnyam_back.service;
 
-import com.goorm.nyangnyam_back.model.DiariesModel;
+import com.goorm.nyangnyam_back.model.Diaries;
 import com.goorm.nyangnyam_back.repository.DiariesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -14,28 +14,28 @@ public class DiariesService {
     @Autowired
     private DiariesRepository diariesRepository;
 
-    public List<DiariesModel> getAllDiaries() {
+    public List<Diaries> getAllDiaries() {
         return diariesRepository.findAll();
     }
 
-    public DiariesModel getDiariesById(String id){
+    public Diaries getDiariesById(String id){
         return diariesRepository.findById(id).orElse(null);
     }
 
-    public DiariesModel createDiaries(DiariesModel diariesModel){
-        return diariesRepository.save(diariesModel);
+    public Diaries createDiaries(Diaries diaries){
+        return diariesRepository.save(diaries);
     }
 
-    public DiariesModel updateDiaries(String id, DiariesModel diariesModel){
-        DiariesModel existingDiaries = diariesRepository.findById(id).orElse(null);
+    public Diaries updateDiaries(String id, Diaries diaries){
+        Diaries existingDiaries = diariesRepository.findById(id).orElse(null);
         if(existingDiaries != null) {
-            existingDiaries.setImages(diariesModel.getImages());
-            existingDiaries.setComments(diariesModel.getComments());
-            existingDiaries.setPublicRange(diariesModel.getPublicRange());
-            existingDiaries.setCategory(diariesModel.getCategory());
-            existingDiaries.setGrade(diariesModel.getGrade());
-            existingDiaries.setRecommend(diariesModel.getRecommend());
-            existingDiaries.setUserId(diariesModel.getUserId());
+            existingDiaries.setImages(diaries.getImages());
+            existingDiaries.setComments(diaries.getComments());
+            existingDiaries.setPublicRange(diaries.getPublicRange());
+            existingDiaries.setCategory(diaries.getCategory());
+            existingDiaries.setGrade(diaries.getGrade());
+            existingDiaries.setRecommend(diaries.getRecommend());
+            existingDiaries.setUserId(diaries.getUserId());
         }
         return null;
     }
@@ -44,41 +44,41 @@ public class DiariesService {
         diariesRepository.deleteById(id);
     }
 
-    public DiariesModel likeDiaries(String id){
-        DiariesModel diariesModel = diariesRepository.findById(id).orElse(null);
-        if(diariesModel != null) {
-            diariesModel.setLikes(diariesModel.getLikes() + 1);
-            return diariesRepository.save(diariesModel);
+    public Diaries likeDiaries(String id){
+        Diaries diaries = diariesRepository.findById(id).orElse(null);
+        if(diaries != null) {
+            diaries.setLikes(diaries.getLikes() + 1);
+            return diariesRepository.save(diaries);
         }
         return null;
     }
 
-    public DiariesModel scrapDiaries(String id){
-        DiariesModel diariesModel = diariesRepository.findById(id).orElse(null);
-        if(diariesModel != null) {
-            diariesModel.setScraps(diariesModel.getScraps() + 1);
-            return diariesRepository.save(diariesModel);
+    public Diaries scrapDiaries(String id){
+        Diaries diaries = diariesRepository.findById(id).orElse(null);
+        if(diaries != null) {
+            diaries.setScraps(diaries.getScraps() + 1);
+            return diariesRepository.save(diaries);
         }
         return null;
     }
 
-    public List<DiariesModel> getDiariesSortedByLikes(){
+    public List<Diaries> getDiariesSortedByLikes(){
         return diariesRepository.findAll(Sort.by(Sort.Direction.DESC, "likes"));
     }
 
-    public DiariesModel addComment (String id, Comment comment){
-        DiariesModel diariesModel = diariesRepository.findById(id).orElse(null);
-        if(diariesModel != null){
-            diariesModel.getCommentList().add(comment);
-            return diariesRepository.save(diariesModel);
+    public Diaries addComment (String id, Comment comment){
+        Diaries diaries = diariesRepository.findById(id).orElse(null);
+        if(diaries != null){
+            diaries.getCommentList().add(comment);
+            return diariesRepository.save(diaries);
         }
         return null;
     }
 
     public List<Comment> getComments(String id){
-        DiariesModel diariesModel = diariesRepository.findById(id).orElse(null);
-        if(diariesModel != null){
-            return diariesModel.getCommentList();
+        Diaries diaries = diariesRepository.findById(id).orElse(null);
+        if(diaries != null){
+            return diaries.getCommentList();
         }
         return null;
     }

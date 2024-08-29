@@ -10,7 +10,7 @@ import java.util.List;
 
 @Data
 @Document(collection = "Diaries")
-public class DiariesModel {
+public class Diaries {
     @Id
     private String id;
 
