@@ -54,49 +54,49 @@ public class DiariesController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/like")
-    public ResponseEntity<Diaries> likeDiaries(@PathVariable String id) {
-        Diaries likedDiaries = diariesService.likeDiaries(id);
-        if (likedDiaries != null) {
-            return ResponseEntity.ok(likedDiaries);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
-
-    @PostMapping("/{id}/scrap")
-    public ResponseEntity<Diaries> scrapDiaries(@PathVariable String id) {
-        Diaries scrapedDiaries = diariesService.scrapDiaries(id);
-        if (scrapedDiaries != null) {
-            return ResponseEntity.ok(scrapedDiaries);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
-
-    @GetMapping("/sorted/likes")
-    public ResponseEntity<List<Diaries>> getDiariesSortedByLikes() {
-        List<Diaries> sortedDiaries = diariesService.getDiariesSortedByLikes();
-        return ResponseEntity.ok(sortedDiaries);
-    }
-
-    @PostMapping("/{id}/comments")
-    public ResponseEntity<Diaries> addComment(@PathVariable String id, @RequestBody Comment comment) {
-        Diaries diaries = diariesService.addComment(id, comment);
-        if (diaries != null) {
-            return ResponseEntity.ok(diaries);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
-
-    @GetMapping("/{id}/comments")
-    public ResponseEntity<List<Comment>> getComments(@PathVariable String id) {
-        List<Comment> comments = diariesService.getComments(id);
-        if (comments != null) {
-            return ResponseEntity.ok(comments);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
+//    @PostMapping("/{id}/like")
+//    public ResponseEntity<Diaries> likeDiaries(@PathVariable String id) {
+//        Diaries likedDiaries = diariesService.likeDiaries(id);
+//        if (likedDiaries != null) {
+//            return ResponseEntity.ok(likedDiaries);
+//        } else {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+//        }
+//    }
+//
+//    @PostMapping("/{id}/scrap")
+//    public ResponseEntity<Diaries> scrapDiaries(@PathVariable String id) {
+//        Diaries scrapedDiaries = diariesService.scrapDiaries(id);
+//        if (scrapedDiaries != null) {
+//            return ResponseEntity.ok(scrapedDiaries);
+//        } else {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+//        }
+//    }
+//
+//    @GetMapping("/sorted/likes")
+//    public ResponseEntity<List<Diaries>> getDiariesSortedByLikes() {
+//        List<Diaries> sortedDiaries = diariesService.getDiariesSortedByLikes();
+//        return ResponseEntity.ok(sortedDiaries);
+//    }
+//
+//    @PostMapping("/{id}/comments")
+//    public ResponseEntity<Diaries> addComment(@PathVariable String id, @RequestBody Comment comment) {
+//        Diaries diaries = diariesService.addComment(id, comment);
+//        if (diaries != null) {
+//            return ResponseEntity.ok(diaries);
+//        } else {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+//        }
+//    }
+//
+//    @GetMapping("/{id}/comments")
+//    public ResponseEntity<List<Comment>> getComments(@PathVariable String id) {
+//        List<Comment> comments = diariesService.getComments(id);
+//        if (comments != null) {
+//            return ResponseEntity.ok(comments);
+//        } else {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+//        }
+//    }
 }

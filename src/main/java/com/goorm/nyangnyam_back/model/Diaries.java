@@ -22,7 +22,7 @@ public class Diaries {
     private Integer grade;
     private Boolean recommend;
 
-    private Integer likes = 0;
-    private Integer scraps = 0;
-    private List<Comment> commentList = new ArrayList<>();
+//    private Integer likes = 0;
+//    private Integer scraps = 0;
+//    private List<Comment> commentList = new ArrayList<>();
 }
