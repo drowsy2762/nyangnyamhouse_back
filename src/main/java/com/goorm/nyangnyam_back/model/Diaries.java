@@ -4,7 +4,6 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.xml.stream.events.Comment;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class Diaries {
     private Integer grade;
     private Boolean recommend;
 
-//    private Integer likes = 0;
-//    private Integer scraps = 0;
-//    private List<Comment> commentList = new ArrayList<>();
+    private Integer likes = 0;
+    private Integer scraps = 0;
+    private List<Comment> commentList = new ArrayList<>();
 }
