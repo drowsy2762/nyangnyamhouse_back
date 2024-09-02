@@ -43,6 +43,10 @@ public class DiariesService {
         diariesRepository.deleteById(id);
     }
 
+    public Diaries getDiariesSoretedByCategory(String category){
+        return diariesRepository.findById(category).orElse(null);
+    }
+
     public Diaries likeDiaries(String id){
         Diaries diaries = diariesRepository.findById(id).orElse(null);
         if(diaries != null) {

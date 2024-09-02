@@ -23,9 +23,9 @@ public class DiariesController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Diaries> getDiariesById(@PathVariable String id){
-        Diaries diariesModel = diariesService.getDiariesById(id);
-        if(diariesModel != null){
-            return ResponseEntity.ok(diariesModel);
+        Diaries diaries = diariesService.getDiariesById(id);
+        if(diaries != null){
+            return ResponseEntity.ok(diaries);
         }
         else{
             return ResponseEntity.notFound().build();
@@ -59,6 +59,17 @@ public class DiariesController {
         if (likedDiaries != null) {
             return ResponseEntity.ok(likedDiaries);
         } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    @PostMapping("/category")
+    public ResponseEntity<Diaries> postDiariesSortedByCategory(@PathVariable String category){
+        Diaries diaries = diariesService.getDiariesSoretedByCategory(category);
+        if(diaries != null){
+            return ResponseEntity.ok(diaries);
+        }
+        else{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
