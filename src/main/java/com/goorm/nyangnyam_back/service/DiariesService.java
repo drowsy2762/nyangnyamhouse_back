@@ -69,20 +69,20 @@ public class DiariesService {
         return diariesRepository.findAll(Sort.by(Sort.Direction.DESC, "likes"));
     }
 
-    public Diaries addComment (String id, Comment comment){
-        Diaries diaries = diariesRepository.findById(id).orElse(null);
-        if(diaries != null){
-            diaries.getCommentList().add(comment);
-            return diariesRepository.save(diaries);
-        }
-        return null;
-    }
-
-    public List<Comment> getComments(String id){
-        Diaries diaries = diariesRepository.findById(id).orElse(null);
-        if(diaries != null){
-            return diaries.getCommentList();
-        }
-        return null;
-    }
+//    public Diaries addComment (String id, Comment comment){
+//        Diaries diaries = diariesRepository.findById(id).orElse(null);
+//        if(diaries != null){
+//            diaries.getCommentList().add(comment);
+//            return diariesRepository.save(diaries);
+//        }
+//        return null;
+//    }
+//
+//    public List<Comment> getComments(String id){
+//        Diaries diaries = diariesRepository.findById(id).orElse(null);
+//        if(diaries != null){
+//            return diaries.getCommentList();
+//        }
+//        return null;
+//    }
 }

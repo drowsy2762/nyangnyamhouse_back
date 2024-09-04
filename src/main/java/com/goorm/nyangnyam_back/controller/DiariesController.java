@@ -90,23 +90,23 @@ public class DiariesController {
         return ResponseEntity.ok(sortedDiaries);
     }
 
-    @PostMapping("/{id}/comments")
-    public ResponseEntity<Diaries> addComment(@PathVariable String id, @RequestBody Comment comment) {
-        Diaries diaries = diariesService.addComment(id, comment);
-        if (diaries != null) {
-            return ResponseEntity.ok(diaries);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
-
-    @GetMapping("/{id}/comments")
-    public ResponseEntity<List<Comment>> getComments(@PathVariable String id) {
-        List<Comment> comments = diariesService.getComments(id);
-        if (comments != null) {
-            return ResponseEntity.ok(comments);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
+//    @PostMapping("/{id}/comments")
+//    public ResponseEntity<Diaries> addComment(@PathVariable String id, @RequestBody Comment comment) {
+//        Diaries diaries = diariesService.addComment(id, comment);
+//        if (diaries != null) {
+//            return ResponseEntity.ok(diaries);
+//        } else {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+//        }
+//    }
+//
+//    @GetMapping("/{id}/comments")
+//    public ResponseEntity<List<Comment>> getComments(@PathVariable String id) {
+//        List<Comment> comments = diariesService.getComments(id);
+//        if (comments != null) {
+//            return ResponseEntity.ok(comments);
+//        } else {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+//        }
+//    }
 }

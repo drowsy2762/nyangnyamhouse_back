@@ -1,5 +1,6 @@
 package com.goorm.nyangnyam_back.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -23,5 +24,4 @@ public class Diaries {
 
     private Integer likes = 0;
     private Integer scraps = 0;
-    private List<Comment> commentList = new ArrayList<>();
 }
