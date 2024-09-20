@@ -24,4 +24,6 @@ public class Diaries {
 
     private Integer likes = 0;
     private Integer scraps = 0;
+    @JsonProperty("commentList")
+    private List<Comment> commentList = new ArrayList<>();
 }
