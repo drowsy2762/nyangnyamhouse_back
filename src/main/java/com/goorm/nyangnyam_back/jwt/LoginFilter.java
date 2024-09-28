@@ -4,8 +4,6 @@ package com.goorm.nyangnyam_back.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goorm.nyangnyam_back.document.Refresh;
 import com.goorm.nyangnyam_back.document.User;
-import com.goorm.nyangnyam_back.dto.Response.KakaoResponse;
-import com.goorm.nyangnyam_back.dto.Response.LoginResponse;
 import com.goorm.nyangnyam_back.repository.RefreshRepository;
 import com.goorm.nyangnyam_back.repository.UserRepository;
 import jakarta.servlet.FilterChain;
@@ -55,7 +53,7 @@ import java.util.*;
  *
  *
  * 코드 작성일:
- *      -2024.08.18 ~ 2024.08.19
+ *      -2024.08.18 ~ 2024.09.28
  */
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -79,7 +77,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
      */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException  {
-        System.out.println("로그인 시도");
+        System.out.println("ㅡㅡ 로그인 시도 ㅡㅡ");
+
+        // 요청이 POST 메서드인지 확인
+        if (!request.getMethod().equalsIgnoreCase("POST")) {
+            throw new RuntimeException("Authentication method not supported: " + request.getMethod());
+        }
 
         try {
             // 1. 요청 본문에서 JSON 데이터를 읽어오기
@@ -90,34 +93,22 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             ObjectMapper objectMapper = new ObjectMapper();
             Map<String, Object> jsonMap = objectMapper.readValue(jsonString, Map.class);
 
-            // 3. 소셜 로그인 응답 데이터를 처리
+            // 3. JSON 데이터에서 필요한 정보 추출
+            String nickname = (String) jsonMap.get("nickname");
+            String email = (String) jsonMap.get("email");
             String provider = (String) jsonMap.get("provider");
-            LoginResponse loginResponse = null;
-
-            if (provider.equals("kakao")) {
-                loginResponse = new KakaoResponse(jsonMap);
-            } else if (provider.equals("naver")) {
-                // 네이버 로직 처리
-                // loginResponse = new NaverResponse(jsonMap);
-            } else if (provider.equals("google")) {
-                // 구글 로직 처리
-                // loginResponse = new GoogleResponse(jsonMap);
-            } else {
-                throw new IllegalArgumentException("Unsupported social login provider: " + provider);
-            }
-
-            String providerId = loginResponse.getProviderId();
-            String email = loginResponse.getEmail();
-            String name = loginResponse.getName();
-            String username = provider + providerId; //제공자 + 제공자 발급 아이디로 새로운 아이디 설정
+            String profileImageUrl = (String) jsonMap.get("profileImageUrl");
 
 
-            System.out.println("username:" + username + " provider:" +  provider + " providerId:" + providerId + " name:" + name + " email:" + email);
+            // 이메일을 바이트 배열로 변환하여 UUID v5 를 생성 (UUID v5: 동일한 입력에 대해 일관된 고유 식별자를 생성)
+            UUID emailUUID = UUID.nameUUIDFromBytes(email.getBytes(StandardCharsets.UTF_8));
+            // '제공자 + 이메일 기반 UUID' 형식으로 고유 사용자 ID 생성
+            String username = provider + emailUUID;
 
 
-
-            if (provider == null || providerId == null || name == null || email == null) {
-                throw new IllegalArgumentException("Required social login parameter not found: provider, socialId, name or email.");
+            System.out.println("username:" + username + " provider:" +  provider + " nickname:" + nickname + " email:" + email + "profileImageUrl" + profileImageUrl);
+            if (username == null || provider == null || nickname == null || email == null ) {
+                throw new IllegalArgumentException("Required parameter not found: username or email or provider or nickname or profileImageUrl.");
             }
 
 
@@ -126,16 +117,17 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
             // 사용자가 없으면 회원가입 처리
             if (user == null) {
+                System.out.println("ㅡㅡ 사용자 회원가입 ㅡㅡ");
                 user = new User();
                 user.setUsername(username);
                 user.setProvider(provider);
-                user.setProviderId(providerId);
+                user.setProfileImageUrl(profileImageUrl);
                 user.setEmail(email);
-                user.setName(name);
-                user.setRole("ROLE_ADMIN");
+                user.setName(nickname);
+                user.setRole("ROLE_USER");
                 userRepository.save(user);
             }
-            
+
 
             // Spring Security 사용자의 권한을 검증하기 위해, 사용자 권한 설정
             List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole()));
@@ -158,7 +150,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
      */
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
-
+        System.out.println("ㅡㅡ 로그인 성공 ㅡㅡ");
         // 사용자 정보 가져오기
         String username = authentication.getName();
 
