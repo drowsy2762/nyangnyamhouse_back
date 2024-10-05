@@ -9,10 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+// RESTAPI 세팅 부분입니다 (GET, POST, PUT, DELETE)
+
 @RestController
 @RequestMapping("/diaries")
 public class DiariesController {
 
+    // 의존성 주입
     @Autowired
     private DiariesService diariesService;
 
@@ -32,6 +35,7 @@ public class DiariesController {
         }
     }
 
+    // 글작성 POST
     @PostMapping
     public Diaries createDiaries(@RequestBody Diaries diaries) {
         return diariesService.createDiaries(diaries);
