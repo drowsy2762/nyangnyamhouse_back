@@ -15,6 +15,7 @@ java {
 
 repositories {
 	mavenCentral()
+	mavenLocal()
 }
 
 dependencies {
@@ -28,7 +29,7 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 	//mongodb
-	//implementation 'org.springframework.ai:spring-ai-mongodb-atlas-store-spring-boot-starter'
+	implementation 'org.springframework.ai:spring-ai-mongodb-atlas-store-spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
