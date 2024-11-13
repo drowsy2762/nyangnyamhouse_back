@@ -19,6 +19,7 @@ public class DiariesController {
     @Autowired
     private DiariesService diariesService;
 
+    // 글목록 GET
     @GetMapping
     public List<Diaries> getAllDiaries(){
         return diariesService.getAllDiaries();
@@ -41,6 +42,7 @@ public class DiariesController {
         return diariesService.createDiaries(diaries);
     }
 
+    // 글수정 PUT
     @PutMapping("/{id}")
     public ResponseEntity<Diaries> updateDiaries(@PathVariable String id, @RequestBody Diaries diaries) {
         Diaries updatedDiaries = diariesService.updateDiaries(id, diaries);
@@ -51,12 +53,14 @@ public class DiariesController {
         }
     }
 
+    // 글삭제 DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDiaries(@PathVariable String id) {
         diariesService.deleteDiaries(id);
         return ResponseEntity.noContent().build();
     }
 
+    // 좋아요 기능
     @PostMapping("/{id}/like")
     public ResponseEntity<Diaries> likeDiaries(@PathVariable String id) {
         Diaries likedDiaries = diariesService.likeDiaries(id);
@@ -67,6 +71,7 @@ public class DiariesController {
         }
     }
 
+    // 카테고리별 글목록
     @PostMapping("/category")
     public ResponseEntity<Diaries> postDiariesSortedByCategory(@PathVariable String category){
         Diaries diaries = diariesService.getDiariesSoretedByCategory(category);
@@ -78,6 +83,7 @@ public class DiariesController {
         }
     }
 
+    // 스크랩 기능
     @PostMapping("/{id}/scrap")
     public ResponseEntity<Diaries> scrapDiaries(@PathVariable String id) {
         Diaries scrapedDiaries = diariesService.scrapDiaries(id);
@@ -88,12 +94,14 @@ public class DiariesController {
         }
     }
 
+    // 좋아요 순으로 정렬
     @GetMapping("/sorted/likes")
     public ResponseEntity<List<Diaries>> getDiariesSortedByLikes() {
         List<Diaries> sortedDiaries = diariesService.getDiariesSortedByLikes();
         return ResponseEntity.ok(sortedDiaries);
     }
 
+    // 조회수 순으로 정렬
     @PostMapping("/{id}/comments")
     public ResponseEntity<Diaries> addComment(@PathVariable String id, @RequestBody Comment comment) {
         Diaries diaries = diariesService.addComment(id, comment);
@@ -104,6 +112,7 @@ public class DiariesController {
         }
     }
 
+    // 댓글 작성
     @GetMapping("/{id}/comments")
     public ResponseEntity<List<Comment>> getComments(@PathVariable String id) {
         List<Comment> comments = diariesService.getComments(id);
