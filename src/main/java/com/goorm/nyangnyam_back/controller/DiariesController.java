@@ -1,6 +1,6 @@
 package com.goorm.nyangnyam_back.controller;
 
-import com.goorm.nyangnyam_back.model.Comment;
+import com.goorm.nyangnyam_back.model.DComment;
 import com.goorm.nyangnyam_back.model.Diaries;
 import com.goorm.nyangnyam_back.service.DiariesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,8 +103,8 @@ public class DiariesController {
 
     // 조회수 순으로 정렬
     @PostMapping("/{id}/comments")
-    public ResponseEntity<Diaries> addComment(@PathVariable String id, @RequestBody Comment comment) {
-        Diaries diaries = diariesService.addComment(id, comment);
+    public ResponseEntity<Diaries> addComment(@PathVariable String id, @RequestBody DComment dcomment) {
+        Diaries diaries = diariesService.addComment(id, dcomment);
         if (diaries != null) {
             return ResponseEntity.ok(diaries);
         } else {
@@ -114,8 +114,8 @@ public class DiariesController {
 
     // 댓글 작성
     @GetMapping("/{id}/comments")
-    public ResponseEntity<List<Comment>> getComments(@PathVariable String id) {
-        List<Comment> comments = diariesService.getComments(id);
+    public ResponseEntity<List<DComment>> getComments(@PathVariable String id) {
+        List<DComment> comments = diariesService.getComments(id);
         if (comments != null) {
             return ResponseEntity.ok(comments);
         } else {

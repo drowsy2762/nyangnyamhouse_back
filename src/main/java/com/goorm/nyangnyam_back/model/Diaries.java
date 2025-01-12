@@ -31,5 +31,5 @@ public class Diaries {
     private Integer scraps = 0;
 
     @JsonProperty("comment_list")
-    private List<Comment> commentList = new ArrayList<>();
+    private List<DComment> commentList = new ArrayList<>();
 }

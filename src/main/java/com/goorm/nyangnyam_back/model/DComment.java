@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
 
-public class Comment {
+// Diaries의 Comment를 나타내는 DComment 클래스
+public class DComment {
     @JsonProperty("user_id")
     private String userId;
 

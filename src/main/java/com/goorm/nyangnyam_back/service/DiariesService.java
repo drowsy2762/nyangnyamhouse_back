@@ -1,6 +1,6 @@
 package com.goorm.nyangnyam_back.service;
 
-import com.goorm.nyangnyam_back.model.Comment;
+import com.goorm.nyangnyam_back.model.DComment;
 import com.goorm.nyangnyam_back.model.Diaries;
 import com.goorm.nyangnyam_back.repository.DiariesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +69,7 @@ public class DiariesService {
         return diariesRepository.findAll(Sort.by(Sort.Direction.DESC, "likes"));
     }
 
-    public Diaries addComment (String id, Comment comment){
+    public Diaries addComment (String id, DComment comment){
         Diaries diaries = diariesRepository.findById(id).orElse(null);
         if(diaries != null){
             diaries.getCommentList().add(comment);
@@ -78,7 +78,7 @@ public class DiariesService {
         return null;
     }
 
-    public List<Comment> getComments(String id){
+    public List<DComment> getComments(String id){
         Diaries diaries = diariesRepository.findById(id).orElse(null);
         if(diaries != null){
             return diaries.getCommentList();
