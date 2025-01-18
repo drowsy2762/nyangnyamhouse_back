@@ -4,8 +4,10 @@ package com.goorm.nyangnyam_back.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goorm.nyangnyam_back.document.Refresh;
 import com.goorm.nyangnyam_back.document.User;
+import com.goorm.nyangnyam_back.dto.Response.KakaoResponse;
+import com.goorm.nyangnyam_back.dto.Response.LoginResponse;
 import com.goorm.nyangnyam_back.repository.RefreshRepository;
-import com.goorm.nyangnyam_back.repository.UserRepository;
+import com.goorm.nyangnyam_back.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -91,24 +93,23 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
             // 2. JSON 데이터를 Map으로 변환
             ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Object> jsonMap = objectMapper.readValue(jsonString, Map.class);
+            Map<String, Object> attributes = objectMapper.readValue(jsonString, Map.class);
 
-            // 3. JSON 데이터에서 필요한 정보 추출
-            String nickname = (String) jsonMap.get("nickname");
-            String email = (String) jsonMap.get("email");
-            String provider = (String) jsonMap.get("provider");
-            String profileImageUrl = (String) jsonMap.get("profileImageUrl");
+            // 소셜 서비스에 따라 응답 객체 처리
+            String provider = (String) attributes.get("provider");
+            LoginResponse loginResponse = null;
 
-
-            // 이메일을 바이트 배열로 변환하여 UUID v5 를 생성 (UUID v5: 동일한 입력에 대해 일관된 고유 식별자를 생성)
-            UUID emailUUID = UUID.nameUUIDFromBytes(email.getBytes(StandardCharsets.UTF_8));
-            // '제공자 + 이메일 기반 UUID' 형식으로 고유 사용자 ID 생성
-            String username = provider + emailUUID;
-
-
-            System.out.println("username:" + username + " provider:" +  provider + " nickname:" + nickname + " email:" + email + "profileImageUrl" + profileImageUrl);
-            if (username == null || provider == null || nickname == null || email == null ) {
-                throw new IllegalArgumentException("Required parameter not found: username or email or provider or nickname or profileImageUrl.");
+            if(provider.equals("Kakao")){
+                loginResponse = new KakaoResponse(attributes);
+            }
+            else if(provider.equals("Google")){
+                //loginResponse = new GoogleResponse(attributes);
+            }
+            else if(provider.equals("Naver")){
+                //loginResponse = new NaverResponse(attributes);
+            }
+            else{
+                throw new IllegalArgumentException("Unsupported provider: " + provider);
             }
 
 
