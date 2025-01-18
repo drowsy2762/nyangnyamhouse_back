@@ -15,8 +15,10 @@ public class User {
     private String _id;         // MongoDB의 기본 _id 필드에 대응하는 필드
     private String username;    // 소셜 로그인 제공자 + 소셜 로그인 고유 아이디로 만든 새로운 아이디
     private String provider;    // 소셜 로그인 제공자 (예: "kakao", "google", "facebook")
-    private String profileImageUrl; // 사용자 이미지
     private String email;       // 사용자 이메일
-    private String name;        // 사용자 본명
+    private String profileImageUrl; // 사용자 이미지
+
     private String role;        // 사용자 권한
+    private String nickname;    // 사용자 닉네임
+    //private String major;       // 사용자 전공
 }
