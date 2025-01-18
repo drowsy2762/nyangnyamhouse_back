@@ -60,14 +60,14 @@ import java.util.*;
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
 
-    public LoginFilter(AuthenticationManager authenticationManager, UserRepository userRepository, JWTUtil jwtUtil, RefreshRepository refreshRepository) {
-        this.setFilterProcessesUrl("/auth/login");  // 공통 로그인 엔드포인트 설정
+    public LoginFilter(AuthenticationManager authenticationManager, UserService userService, JWTUtil jwtUtil, RefreshRepository refreshRepository) {
+        this.setFilterProcessesUrl("/auth/login");  // 공통 로그인 엔드포인트 설정 -> oauth2/authorization/서비스명
         this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.jwtUtil = jwtUtil;
         this.refreshRepository = refreshRepository;
     }
@@ -114,22 +114,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
 
             // 사용자가 회원가입 했는지 DB 조회
-            User user = userRepository.findByUsername(username);
+            User user = userService.findUserByUsername(loginResponse.getUsername()).orElse(null);
 
-            // 사용자가 없으면 회원가입 처리
+            // 사용자가 없으면 회원가입
             if (user == null) {
-                System.out.println("ㅡㅡ 사용자 회원가입 ㅡㅡ");
-                user = new User();
-                user.setUsername(username);
-                user.setProvider(provider);
-                user.setProfileImageUrl(profileImageUrl);
-                user.setEmail(email);
-                user.setName(nickname);
-                user.setRole("ROLE_USER");
-                userRepository.save(user);
+                user = userService.registerUser(loginResponse);
+                System.out.println("새로 회원가입된 유저: " + user);
             }
 
-
+            // 사용자 인증
             // Spring Security 사용자의 권한을 검증하기 위해, 사용자 권한 설정
             List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole()));
 

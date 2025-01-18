@@ -3,6 +3,8 @@ package com.goorm.nyangnyam_back.config;
 import com.goorm.nyangnyam_back.jwt.*;
 import com.goorm.nyangnyam_back.repository.RefreshRepository;
 import com.goorm.nyangnyam_back.repository.UserRepository;
+import com.goorm.nyangnyam_back.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +21,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 @Configuration
 @Profile("!dev")
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -26,15 +29,9 @@ public class SecurityConfig {
     private final CustomAuthenticationProvider customAuthenticationProvider;
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
+    private final UserService userService;
 
-    @Autowired
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, UserRepository userRepository, CustomAuthenticationProvider customAuthenticationProvide, JWTUtil jwtUtil, RefreshRepository refreshRepository) {
-        this.authenticationConfiguration = authenticationConfiguration;
-        this.userRepository = userRepository;
-        this.customAuthenticationProvider = customAuthenticationProvide;
-        this.jwtUtil = jwtUtil;
-        this.refreshRepository = refreshRepository;
-    }
+
 
 
     //AuthenticationManager 등록
@@ -80,7 +77,7 @@ public class SecurityConfig {
 
         //LoginFilter 등록
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), userRepository, jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), userService, jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);
 
 
         //JWTFilter 등록
