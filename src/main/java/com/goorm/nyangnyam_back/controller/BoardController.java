@@ -35,13 +35,10 @@ public class BoardController {
 
 
     // 게시글 목록 GET
-    @GetMapping("/boards")  // ex) localhost:8080/boards?page=0&size=10&sort=id,DESC (page: 페이지 번호 (0부터 시작), size: 한 페이지에 포함될 데이터 개수, sort: 정렬 기준)
-    public ResponseEntity<Map<String, Object>> getAllBoards(
+    @GetMapping("/boards")
+    public ResponseEntity<Map<String, Object>> getAllBoards( // page: 페이지 번호 (0부터 시작), size: 한 페이지에 포함될 데이터 개수, sort: 정렬 기준)
             @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam(value = "search", required = false) String search) {
-
-        System.out.println("pageable: " + pageable);
-        System.out.println("search:" + search);
 
         Page<Board> boardPage; // Page는 페이징 관련 메타데이터(현재 페이지, 총 페이지 수, 총 데이터 수 등)
         if (search == null || search.isEmpty()) {
@@ -49,9 +46,6 @@ public class BoardController {
         } else {
             boardPage = boardService.getSearchBoards(search, pageable);
         }
-
-        System.out.println("boardPage: " + boardPage);
-
         // Create a response map
         Map<String, Object> response = new HashMap<>();
         response.put("content", boardPage.getContent()); // 게시글 데이터
@@ -59,7 +53,6 @@ public class BoardController {
         response.put("totalPages", boardPage.getTotalPages()); // 총 페이지 수
         response.put("pageSize", boardPage.getSize()); // 한 페이지당 게시글 수
         response.put("totalElements", boardPage.getTotalElements()); // 전체 게시글
-
 
         // Custom pagination info
         int currentPage = boardPage.getNumber();      // 현재 페이지
@@ -73,7 +66,7 @@ public class BoardController {
 
 
    // 게시글 상세 GET
-   @GetMapping("/boards/{id}") // ex) localhost:8080/boards/{view?id=1}
+   @GetMapping("/boards/{id}")
     public ResponseEntity<Board> getBoardsById(@PathVariable String id){
        Board board = boardService.getBoardsById(id);
        if(board != null){
