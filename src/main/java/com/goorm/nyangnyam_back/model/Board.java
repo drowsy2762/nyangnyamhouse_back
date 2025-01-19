@@ -1,28 +1,27 @@
 package com.goorm.nyangnyam_back.model;
 
-import lombok.Data;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.Id;
 
-import java.util.List;
-
-@Data
+@Getter
+@Setter
+@ToString
 @Document(collection = "Board")
 public class Board {
 
     @Id
-    private Integer id;
+    private String id;
+    private String username;
     private String title;
     private String content;
-    private String filename;
-    private String filepath;
-    private String visibility; // 공개 범위 (예: 공개, 비공개)
+    private String publicRange; // 공개 범위 (예: 공개, 비공개)
+    private String category;    // 카테고리 (예: 한식, 중식, 양식 등)
 
-    private boolean isRestaurant;
-
-    private String category; // 카테고리 (예: 한식, 중식, 양식 등)
-
-    private int likeCount; // 좋아요 수
-
-    private List<BComment> comments;
+    private String comments;
+    private Integer likesCount = 0; // 좋아요 수
+    private Integer scrapsCount = 0;
 }

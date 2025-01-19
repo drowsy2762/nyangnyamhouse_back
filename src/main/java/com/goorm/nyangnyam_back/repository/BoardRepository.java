@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BoardRepository extends MongoRepository<Board, Integer> {
-
-    Page<Board> findByTitleContaining(String searchkeyword, Pageable pageable);
+public interface BoardRepository extends MongoRepository<Board, String> {
+    Page<Board> findByTitleContainingIgnoreCase(String search, Pageable pageable);
 }

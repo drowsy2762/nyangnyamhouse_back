@@ -1,109 +1,124 @@
 package com.goorm.nyangnyam_back.controller;
 
+import com.goorm.nyangnyam_back.jwt.JWTUtil;
 import com.goorm.nyangnyam_back.service.BoardService;
 import com.goorm.nyangnyam_back.model.Board;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import java.util.HashMap;
+import java.util.Map;
 
-@Controller
+@RestController
+@RequiredArgsConstructor
 public class BoardController {
 
-    @Autowired
-    private BoardService boardService;
+    private final BoardService boardService;
+    private final JWTUtil jwtUtil;
 
+    
+    // 게시글 작성 POST
+    @PostMapping("/boards")
+    public Board createBoards(@RequestBody Board board,
+                              @RequestHeader("access") String accessToken){
+        // access 토큰에서 사용자 이름 추출
+        String username = jwtUtil.getUsername(accessToken);
+        board.setUsername(username);
 
-    @GetMapping("/board/write") //localhost:8090/board/write
-    public String boardWriteForm(){
-
-        return "boardwrite";
+        return boardService.createBoards(board);
     }
 
-    @PostMapping("/board/writepro")
-    public String boardWritePro(Board board,
-                                Model model,
-                                @RequestParam("file") MultipartFile file,
-                                @RequestParam("visibility") String visibility,
-                                @RequestParam(value = "isRestaurant", required = false) Boolean isRestaurant,
-                                @RequestParam("category") String category) throws Exception{
 
-        board.setVisibility(visibility);
+    // 게시글 목록 GET
+    @GetMapping("/boards")  // ex) localhost:8080/boards?page=0&size=10&sort=id,DESC (page: 페이지 번호 (0부터 시작), size: 한 페이지에 포함될 데이터 개수, sort: 정렬 기준)
+    public ResponseEntity<Map<String, Object>> getAllBoards(
+            @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(value = "search", required = false) String search) {
 
-        board.setRestaurant(isRestaurant != null ? isRestaurant : false);
-        board.setCategory(category);
+        System.out.println("pageable: " + pageable);
+        System.out.println("search:" + search);
 
-        boardService.write(board,file);
-
-        //글 작성 완료된 메세지를 띄우기(confirm)
-        model.addAttribute("message", "글 작성 완료");
-        model.addAttribute("searchUrl", "/board/list");
-
-        return "message";
-    }
-
-    @GetMapping("/board/list")
-    public String boardList(Model model,
-                            @PageableDefault(page=0, size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable,
-                            @RequestParam(value = "searchkeyword", required = false) String searchkeyword){
-
-        Page<Board> list = null;
-
-        if(searchkeyword == null){
-            list = boardService.boardList(pageable);
-        }else{
-            list = boardService.boardSearchList(searchkeyword, pageable);
+        Page<Board> boardPage; // Page는 페이징 관련 메타데이터(현재 페이지, 총 페이지 수, 총 데이터 수 등)
+        if (search == null || search.isEmpty()) {
+            boardPage = boardService.getAllBoards(pageable); // Pageable 인터페이스: 페이징과 정렬 정보를 담고 있는 객체
+        } else {
+            boardPage = boardService.getSearchBoards(search, pageable);
         }
 
-        int nowPage= list.getPageable().getPageNumber()+1;
-        int startPage= Math.max(nowPage-4,1);
-        int endPage= Math.min(nowPage+5,list.getTotalPages());
-        model.addAttribute("List", list);
-        model.addAttribute("nowPage", nowPage);
-        model.addAttribute("startPage", startPage);
-        model.addAttribute("endPage", endPage);
-        return "boardlist";
+        System.out.println("boardPage: " + boardPage);
+
+        // Create a response map
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", boardPage.getContent()); // 게시글 데이터
+        response.put("currentPage", boardPage.getNumber()); // 현재 페이지
+        response.put("totalPages", boardPage.getTotalPages()); // 총 페이지 수
+        response.put("pageSize", boardPage.getSize()); // 한 페이지당 게시글 수
+        response.put("totalElements", boardPage.getTotalElements()); // 전체 게시글
+
+
+        // Custom pagination info
+        int currentPage = boardPage.getNumber();      // 현재 페이지
+        int startPage = Math.max(currentPage-4, 0);   // 시작 페이지
+        int endPage = Math.min(currentPage+5, boardPage.getTotalPages()-1); // 끝 페이지
+        response.put("startPage", startPage);
+        response.put("endPage", endPage);
+
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/board/view")// localhost:8090/board/view?id=1
-    public String boardView(Model model, @RequestParam("id") Integer id){
 
-        model.addAttribute("board", boardService.boardView(id));
-        return "boardview";
+   // 게시글 상세 GET
+   @GetMapping("/boards/{id}") // ex) localhost:8080/boards/{view?id=1}
+    public ResponseEntity<Board> getBoardsById(@PathVariable String id){
+       Board board = boardService.getBoardsById(id);
+       if(board != null){
+           return ResponseEntity.ok(board);
+       }
+       else{
+           return ResponseEntity.notFound().build();
+       }
     }
 
-    @GetMapping("/board/delete")
-    public String boardDelete(@RequestParam("id") Integer id){
-        boardService.boardDelete(id);
-        return "redirect:/board/list";
+
+    // 게시글 수정 PUT
+    @PutMapping("/boards/{id}")
+    public ResponseEntity<Board> updateBoards(@PathVariable String id,
+                                              @RequestBody Board board,
+                                              @RequestHeader("access") String accessToken){
+        try {
+            String username = jwtUtil.getUsername(accessToken);
+            Board updatedBoard = boardService.updateBoards(id, board, username);
+            return ResponseEntity.ok(updatedBoard);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build(); // 404 Not Found
+        } catch (SecurityException e) {
+            //System.out.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403 Forbidden
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
+        }
     }
 
-    @GetMapping("/board/modify/{id}")
-    public String boardModify(@PathVariable("id") Integer id, Model model){
 
-        model.addAttribute("board", boardService.boardView(id));
-        return "boardmodify";
-    }
-
-    @PostMapping("/board/update/{id}")
-    public String boardUpdate(@PathVariable("id") Integer id, Board board, @RequestParam("file") MultipartFile file)  throws Exception {
-
-        Board boardTemp = boardService.boardView(id);
-        boardTemp.setTitle(board.getTitle());
-        boardTemp.setContent(board.getContent());
-
-        boardService.write(boardTemp, file);
-        return "redirect:/board/list";
-    }
-
-    @GetMapping("/board/like/{id}")
-    public String likeBoard(@PathVariable("id") Integer id){
-        boardService.increaseLikeCount(id);
-        return "redirect:/board/view?id=" + id;
+    // 게시글 삭제 DELETE
+    @DeleteMapping("/boards/{id}")
+    public ResponseEntity<String> deleteBoards(@PathVariable String id,
+                                               @RequestHeader("access") String accessToken){
+        try {
+            String username = jwtUtil.getUsername(accessToken);
+            boardService.deleteBoards(id, username);
+            return ResponseEntity.ok("Board deleted successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build(); // 404 Not Found
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403 Forbidden
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
+        }
     }
 }
