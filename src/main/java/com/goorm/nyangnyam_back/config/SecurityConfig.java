@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -60,9 +61,25 @@ public class SecurityConfig {
         //경로별 인가 작업 설정
         http
                 .authorizeHttpRequests((auth) -> auth
+                        // 로그인 및 루트 경로는 모두 허용
                         .requestMatchers("/auth/login", "/").permitAll()
+
+                        // 상세,목록 가져오기(GET)은 모두 허용
+                        .requestMatchers(HttpMethod.GET, "/boards/**").permitAll()
+
+                        // 생성,수정,삭제,좋아요 같은 작업은 인증된 사용자만 허용
+                        .requestMatchers(HttpMethod.POST, "/boards/**").authenticated() // 생성
+                        .requestMatchers(HttpMethod.PUT, "/boards/**").authenticated()  // 수정
+                        .requestMatchers(HttpMethod.DELETE, "/boards/**").authenticated() // 삭제
+                        //.requestMatchers(HttpMethod.POST, "/boards/{id}/like").authenticated() // 좋아요
+
+                        // ADMIN 전용 경로
                         .requestMatchers("/admin").hasRole("ADMIN")
-                        .anyRequest().authenticated());
+
+                        // 기타 모든 요청은 인증된 사용자만 허용
+                        .anyRequest().authenticated()
+                );
+
 
         //세션 설정 (무상태 설정)
         http
