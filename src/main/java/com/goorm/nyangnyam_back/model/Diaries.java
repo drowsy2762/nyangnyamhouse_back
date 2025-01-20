@@ -1,5 +1,6 @@
 package com.goorm.nyangnyam_back.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -24,7 +25,6 @@ public class Diaries {
     private String userId;
     private Integer grade;
     private Boolean recommend;
-    private LocalDateTime timeStamp = LocalDateTime.now();
 
     // 초기 생성시 likes, scraps는 0으로 초기화
     private Integer likes = 0;
@@ -32,4 +32,7 @@ public class Diaries {
 
     @JsonProperty("comment_list")
     private List<DComment> commentList = new ArrayList<>();
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
